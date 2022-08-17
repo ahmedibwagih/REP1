@@ -16,7 +16,7 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - run: echo world;
-             echo $envi_var
+             echo $Envi_Var
 workflows:
   # Name the workflow "welcome"
   welcome:
