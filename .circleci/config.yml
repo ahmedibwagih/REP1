@@ -6,34 +6,26 @@ orbs:
   welcome: circleci/welcome-orb@0.4.1
 # Orchestrate or schedule a set of jobs
 jobs:
-  print_hello:
+  create_infrastructure: 
     docker:
-      - image: circleci/node:13.8.0
+      - image: amazon/aws-cli
     steps:
-      - run: echo hello
-  print_world:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - run: echo world;
-     
-  build:
-      docker:
-        - image: cimg/base:2020.01
-      steps:
-        - checkout
-        - run:
-            name: "echo anm env var that is part of our project"
-            command: |
-              echo $Envi_Var
+      - checkout
+      - run:
+          name: Create Cloudformation Stack
+          command: |
+            aws cloudformation deploy \
+              --template-file template.yml \
+              --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
+              --region us-east-1
+      # Fail the job intentionally to simulate an error.
+      # Uncomment the line below if you want to fail the current step
+      # - run: return 1
+      #- destroy_environment
 workflows:
   # Name the workflow "welcome"
-  welcome:
+ my_workflow: 
     # Run the welcome/run job in its own container
     jobs:
-      - welcome/run
-      - print_hello
-      - print_world:
-          requires:
-            - print_hello
-      - build
+      - create_infrastructure
+    
